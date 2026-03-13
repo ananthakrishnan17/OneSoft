@@ -1,5 +1,6 @@
 package in.onesoft.pos.servlet;
 
+import in.onesoft.pos.id.IdGenerator;
 import in.onesoft.pos.db.Database;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -20,9 +21,19 @@ public class HealthServlet extends HttpServlet {
             dbStatus = "DOWN: " + e.getMessage();
         }
 
+        // ID test
+        String scopeId = IdGenerator.formatScopeId(1);
+        String newId = IdGenerator.generate(scopeId);
+        String extracted = IdGenerator.extractScopeId(newId);
+
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         res.getWriter().write(
-                "{\"app\":\"Onesoft POS\",\"db\":\"" + dbStatus + "\"}");
+                "{" +
+                        "\"app\":\"Onesoft POS\"," +
+                        "\"db\":\"" + dbStatus + "\"," +
+                        "\"sampleId\":\"" + newId + "\"," +
+                        "\"scopeExtracted\":\"" + extracted + "\"" +
+                        "}");
     }
 }
