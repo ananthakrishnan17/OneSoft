@@ -1,10 +1,14 @@
 package in.onesoft.pos.servlet;
 
-import in.onesoft.pos.id.IdGenerator;
 import in.onesoft.pos.db.Database;
+import in.onesoft.pos.id.IdGenerator;
+import in.onesoft.pos.routing.ScopeRouter;
+
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+
 import java.io.IOException;
+import java.util.Map;
 
 @WebServlet("/api/health")
 public class HealthServlet extends HttpServlet {
@@ -13,6 +17,7 @@ public class HealthServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {
 
+        // 1. DB check
         String dbStatus;
         try {
             Database.ctx().fetch("SELECT 1");
@@ -21,10 +26,18 @@ public class HealthServlet extends HttpServlet {
             dbStatus = "DOWN: " + e.getMessage();
         }
 
-        // ID test
-        String scopeId = IdGenerator.formatScopeId(1);
-        String newId = IdGenerator.generate(scopeId);
-        String extracted = IdGenerator.extractScopeId(newId);
+        // 2. ID Generator test
+        String scopeId = IdGenerator.formatScopeId(1); // "0000001"
+        String newId = IdGenerator.generate(scopeId); // 19 digit
+
+        // 3. ScopeRouter test
+        String routerStatus;
+        try {
+            ScopeRouter.routeByScopeId("0000001").fetch("SELECT 1");
+            routerStatus = "OK - routed to DB-1";
+        } catch (Exception e) {
+            routerStatus = "FAILED: " + e.getMessage();
+        }
 
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
@@ -33,7 +46,7 @@ public class HealthServlet extends HttpServlet {
                         "\"app\":\"Onesoft POS\"," +
                         "\"db\":\"" + dbStatus + "\"," +
                         "\"sampleId\":\"" + newId + "\"," +
-                        "\"scopeExtracted\":\"" + extracted + "\"" +
+                        "\"scopeRouter\":\"" + routerStatus + "\"" +
                         "}");
     }
 }
