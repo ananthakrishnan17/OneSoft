@@ -13,8 +13,6 @@ public class CompanyServlet extends HttpServlet {
 
     private final CompanyRepository repo = new CompanyRepository();
 
-    // GET /api/companies?scopeId=0000001 — எல்லாம்
-    // GET /api/companies/0000001382916475820 — ஒரு company
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException {

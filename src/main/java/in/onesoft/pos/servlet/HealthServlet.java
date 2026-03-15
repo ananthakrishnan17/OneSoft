@@ -8,7 +8,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.util.Map;
 
 @WebServlet("/api/health")
 public class HealthServlet extends HttpServlet {
